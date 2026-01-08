@@ -1,0 +1,35 @@
+layout (vertices = 3) out;
+
+// INPUTS (From VS)
+in vec3 pos_cs_in[];
+in vec3 normal_cs_in[];
+in vec2 tex_coord_cs_in[];
+
+// OUTPUTS (To TES)
+out vec3 pos_es_in[];
+out vec3 normal_es_in[];
+out vec2 tex_coord_es_in[];
+uniform int id;
+
+
+void main()
+{   
+  float level;
+  if (id == 0){
+  level = 30;
+} else if (id == 1){
+  level = 1;
+}
+  // 1. Tessellation Levels (Keep your hardcoded 5)
+  gl_TessLevelOuter[0] = level;
+  gl_TessLevelOuter[1] = level;
+  gl_TessLevelOuter[2] = level;
+  gl_TessLevelInner[0] = level;
+
+  // 2. Pass Data Through
+  // We just copy the data for THIS specific vertex (gl_InvocationID)
+  pos_es_in[gl_InvocationID] = pos_cs_in[gl_InvocationID];
+  normal_es_in[gl_InvocationID] = normal_cs_in[gl_InvocationID];
+  tex_coord_es_in[gl_InvocationID] = tex_coord_cs_in[gl_InvocationID];
+}
+

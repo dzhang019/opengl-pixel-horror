@@ -1,0 +1,71 @@
+layout(triangles, equal_spacing, ccw) in;
+
+vec2 interpolate2D(vec2 v0, vec2 v1, vec2 v2);
+vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2);
+uniform mat4 view;
+uniform mat4 proj;
+uniform mat4 model;
+uniform int id; 
+
+in vec3 pos_es_in[];       
+in vec3 normal_es_in[];    
+in vec2 tex_coord_es_in[]; 
+
+out vec4 pos_fs_in;      
+out vec4 view_pos_fs_in; 
+out vec3 normal_fs_in;   
+out vec2 vTexCoord;      
+out vec3 pos_obj_fs_in; 
+
+// Helper functions 
+
+// Forward declaration
+float improved_perlin_noise(vec3 st);
+
+void main()
+{
+    vec3 p_obj = interpolate3D(pos_es_in[0], pos_es_in[1], pos_es_in[2]);
+    vec3 n_obj = interpolate3D(normal_es_in[0], normal_es_in[1], normal_es_in[2]);
+    vTexCoord  = interpolate2D(tex_coord_es_in[0], tex_coord_es_in[1], tex_coord_es_in[2]);
+
+    if (id == 0) { 
+        float noise_scale = 0.01; 
+        float height_amp = 15.0;  
+        float eps = 0.01;        
+
+        // Store original position for noise lookup
+        vec3 p_flat = p_obj; 
+
+        // Apply Displacement
+        float h = improved_perlin_noise(p_flat * noise_scale);
+        p_obj.y += h * height_amp;
+
+        // Recalculate Normals (Using p_flat)
+        float h_right   = improved_perlin_noise((p_flat + vec3(eps,0,0)) * noise_scale);
+        float h_forward = improved_perlin_noise((p_flat + vec3(0,0,eps)) * noise_scale);
+        
+        vec3 T = normalize(vec3(eps, (h_right - h) * height_amp, 0.0));
+        vec3 B = normalize(vec3(0.0, (h_forward - h) * height_amp, eps));
+        
+        n_obj = normalize(cross(B, T));
+    }
+
+    if (id == 2) {
+        float noise_scale = 0.01; 
+        float height_amp = 15.0;  
+        vec3 root = vec3(model[3].x, model[3].y, model[3].z);
+        float h = improved_perlin_noise(root * noise_scale);
+        p_obj.y += h * height_amp;
+        p_obj.y += 0.0;
+    }
+    pos_obj_fs_in = p_obj;
+
+    vec4 world_pos = model * vec4(p_obj, 1.0);
+    view_pos_fs_in = view * world_pos;
+    pos_fs_in      = proj * view_pos_fs_in;
+    
+    gl_Position = pos_fs_in;
+
+    mat3 normalMatrix = transpose(inverse(mat3(view * model)));
+    normal_fs_in = normalize(normalMatrix * n_obj);
+}

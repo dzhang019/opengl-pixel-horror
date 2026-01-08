@@ -1,0 +1,6 @@
+[submodule "eigen"]
+	path = eigen
+	url = https://github.com/sgsellan/eigen-git-mirror.git
+[submodule "glfw"]
+	path = glfw
+	url = https://github.com/glfw/glfw.git
