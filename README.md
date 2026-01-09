@@ -5,7 +5,7 @@ The project is a custom-built 3D graphics engine written in C++ and OpenGL and a
 
 The engine uses Blinn-Phong shading. A screen-space ordered dithering effect is added on top, creating the retro pixelized style.
 
-The landscape is procedurally generated instead of a predefined static mesh. The engine uses Tessellation Shaders to dynamically subdivide a coarse plane into a high-resolution grid on the fly (avoiding preloading a heavy static mesh). This grid is then deformed using 3D Perlin Noise to create organic, rolling hills, with surface normals recalculated in real-time for accurate lighting. Additionally, custom micro-bump mapping algorithm in the fragment shader to simulate the granular texture of dirt/grass. 
+The landscape is procedurally generated instead of a predefined static mesh. The engine uses Tessellation Shaders to dynamically subdivide a coarse plane into a high-resolution grid on the fly (avoiding preloading a heavy static mesh). This grid is then deformed using 3D Perlin Noise to create organic, rolling hills, with surface normals recalculated in real-time for accurate lighting. Additionally, I used a custom micro-bump mapping algorithm in the fragment shader to simulate the granular texture of the grass. 
 
 
 <img src="coms4160finalprojectdemo.gif" alt="Alt Text" width="1200" />
